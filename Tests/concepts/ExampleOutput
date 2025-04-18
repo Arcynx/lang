@@ -1,0 +1,8 @@
+Error in main.fl (LINE 6):
+
+Syntax Error: expected '->' after function glfwInit.
+
+Possible Solutions:
+
+- Add '->' after the function name.
+- Remove the glfwInit function call.

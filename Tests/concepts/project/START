@@ -1,0 +1,7 @@
+#!/bin/bash
+
+flcc -fld project.fld -o target/build/%version%.fcp
+
+flcc -debug -fcp ./target/build/%version%.fcp -o target/temp/%version%.bin
+
+./target/temp/%version%.bin

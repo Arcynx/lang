@@ -1,0 +1,115 @@
+use scientific::graphysics
+use scientific::physics
+
+fn main(): int
+{
+    let window[] = [{int, string}, 3] -> 800, 600, "Physics Simulation"; /* Create multitype array */
+
+    let settings = (graphysics::settings) -> 3D, show_w; /* Create Settings struct with time visualization */
+
+    graphysics::init -> window, settings;
+
+    graphysics::set_background -> (background) -> graphysics::clear, 0, 0, 0, 0;
+
+    let camera = graphysics::camera -> 0, 0, 0, (flags) -> MOVE_CAMERA, FOLLOW_CURSOR;
+
+    let scale = graphysics::scale -> 1, 1, 1;
+
+    graphysics::simulation -> sim_settings, *** time ***; /* variables in *** are reserved in memory for later definition */
+
+    graphysics::set_scale -> scale;
+    graphysics::set_camera -> camera;
+
+    const let gravity = physics.constants::G; /* Gravitational constant */
+
+    let time = time -> 0;
+
+    let planets = [
+        (name, mass, radius, distance)
+        [
+            ("Sun", physics.constants::M_sun,         (unit -> physics.units::MegaMeter, 696), 0),
+            ("Mercury", physics.constants::M_mercury, (unit -> physics.units::MegaMeter, 2.44), 57.909e9),
+            ("Venus", physics.constants::M_venus,     (unit -> physics.units::MegaMeter, 6.05), 108.208e9),
+            ("Earth", physics.constants::M_earth,     (unit -> physics.units::MegaMeter, 6.37), 149.597e9),
+            ("Mars", physics.constants::M_mars,       (unit -> physics.units::MegaMeter, 3.39), 227.939e9),
+            ("Jupiter", physics.constants::M_jupiter, (unit -> physics.units::MegaMeter, 69.91), 778.299e9),
+            ("Saturn", physics.constants::M_saturn,   (unit -> physics.units::MegaMeter, 58.23), 1429.4e9),
+            ("Uranus", physics.constants::M_uranus,   (unit -> physics.units::MegaMeter, 50.72), 2870.972e9),
+            ("Neptune", physics.constants::M_neptune, (unit -> physics.units::MegaMeter, 49.24), 4497.07e9)
+        ]
+    ];
+
+    let nodes = [];
+
+    for -> i, 0..len(planets)
+    {
+        let node = create_node -> planets[i][1], (graphysics::radius) -> planets[i][2][0], planets[i][2][1];
+        add -> nodes, node;
+    }
+
+    let white_hole = create_node -> -1e40, (graphysics::radius) -> unit -> physics.units::MegaMeter, 200;
+    add -> nodes, white_hole;
+
+    while -> time < unit -> physics.units::Year, 100
+    {
+        advance -> time, Gµm * gravity;
+
+        for -> i, 0..len(planets)
+        {
+            for -> j, 0..len(planets)
+            {
+                if -> i != j
+                {
+                    add_edge -> nodes[i], nodes[j], distance -> nodes[i], nodes[j];
+                }
+            }
+        }
+
+        add_edge -> nodes[len(planets)], nodes[0], distance -> nodes[len(planets)], nodes[0];
+
+        time += 1;
+    }
+
+    ret -> 0;
+}
+
+/* Runs every tick of the simulation */
+fn sim_settings(): graphysics::simulation.settings
+{
+    let setts = (graphysics::simulation.settings) -> ();
+
+    let force_x = 0;
+    let force_y = 0;
+    let force_z = 0;
+    let force_w = 0;
+
+    /* Define gravity according to general relativity */
+
+    let G = physics.constants::G; /* Gravitational constant */
+    let c = physics.constants::c; /* Speed of light */
+    
+    for -> i, 0..len(planets)
+    {
+        for -> j, 0..len(planets)
+        {
+            if -> i != j
+            {
+                let r = setts.objects[i].distance -> setts.objects[j];
+                let m1 = setts.objects[i].mass;
+                let m2 = setts.objects[j].mass;
+
+                let force = (4 * G * m1 * m2) / (r * r * c * c);
+                force_x += force * (nodes[j].x - nodes[i].x) / r;
+                force_y += force * (nodes[j].y - nodes[i].y) / r;
+                force_z += force * (nodes[j].z - nodes[i].z) / r;
+                force_w += force * (nodes[j].w - nodes[i].w) / r;
+            }
+        }
+    }
+
+    let total_force = (force_x, force_y, force_z, force_w);
+
+    setts.F -> total_force;
+
+    ret -> setts;
+}

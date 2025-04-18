@@ -1,0 +1,22 @@
+<LIBARIES>
+    [Graphysics]
+        (Source)
+            "https://github.com/arcynx/graphysics.git"
+        (Version)
+            "0.0.3"
+        (Externals)
+            "debug": true
+
+# Settings
+
+<SETTINGS>
+    [Compiler]
+        (Mode)
+            "debug"
+        (Warnings)
+            "all"
+        (Target)
+            "x86_64"
+    [Main]
+        (Main-files)
+            "src/main.fl"

@@ -1,0 +1,8 @@
+use std::io
+
+fn main(): int
+{
+    println -> "Hello, World!";
+
+    ret -> 0;
+}

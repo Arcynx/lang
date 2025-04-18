@@ -1,0 +1,63 @@
+use std::io
+use flc::glfw.fl /* flc libaries are c libaries that have been ported from c */
+use flc::gl.fl /* to import c native libaries you use "use SDL2::SDL.h"*/
+
+/* Boolean values are not implentaed by default */
+type bool -> 1 BIT
+
+def true -> 0x1
+def false -> 0x0
+
+fn @main(): int
+{
+    glfw.init -> NULL;
+
+    /* Create a windowed mode window and its OpenGL context */
+    let window = glfw.create_window -> 800, 600, "Hello Triangle", NULL, NULL;
+
+    /* Make the window's context current */
+    glfw.make_context_current -> window;
+
+    /* Set up vertex data */
+    let vertices[] = {
+        -0.5f, -0.5f, 0.0f, /* Bottom left */
+         0.5f, -0.5f, 0.0f, /* Bottom right */
+         0.0f,  0.5f, 0.0f  /* Top */
+    };
+
+    /* Create a Vertex Array Object */
+    let vao = gl.gen_vertex_array -> NULL;
+    gl.bind_vertex_array -> vao;
+
+    /* Create a Vertex Buffer Object */
+    let vbo = gl.gen_buffer -> NULL;
+    gl.bind_buffer -> gl.ARRAY_BUFFER, vbo;
+    gl.buffer_data -> gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW;
+
+    /* Define the vertex data layout */
+    gl.vertex_attrib_pointer -> 0, 3, gl.FLOAT, false, 3 * sizeof -> float, 0;
+    gl.enable_vertex_attrib_array -> 0;
+
+    /* Main loop */
+    while -> !glfw.window_should_close -> window
+    {
+        /* Clear the screen */
+        gl.clear -> gl.COLOR_BUFFER_BIT;
+
+        /* Draw the triangle */
+        gl.draw_arrays -> gl.TRIANGLES, 0, 3;
+
+        /* Swap front and back buffers */
+        glfw.swap_buffers -> window;
+
+        /* Poll for and process events */
+        glfw.poll_events -> NULL;
+    }
+
+    /* Clean up */
+    gl.delete_buffer -> vbo;
+    gl.delete_vertex_array -> vao;
+    glfw.terminate -> NULL;
+
+    ret -> 0;
+}

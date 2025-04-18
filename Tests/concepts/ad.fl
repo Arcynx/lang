@@ -1,0 +1,83 @@
+use std::io
+
+/* test.fl is imported */
+extern test.fl
+
+/* Function is exported because of the @ */
+fn @add(a, b)
+{
+    ret -> a + b;
+}
+
+type bool -> 1 BIT;
+
+def true -> 0x1;
+def false -> 0x0;
+
+class vec2
+{
+    public ->
+
+    float x;
+    float y;
+
+    fn multipy(value)
+    {
+        x *= value;
+        y *= value;
+    }
+}
+
+fn main(): int
+{
+    let a = 0.4: int;
+
+    ptr ap = &a;
+
+    println -> *ap;
+
+    a = add -> a, 1;
+
+    /* The => operator has a value or expression to the left and a variable or function and outputs the value into the function or variable */
+
+    add -> a, 1 => a;
+
+    println -> "Hello, World!";
+
+    if -> a > 5
+    {
+        println -> "a is more than 5!";
+    }
+    else
+    {
+        println -> "a is less than 5!";
+    }
+
+    match -> a
+    {
+        1 => println -> "One!";
+        2 => println -> "Two!";
+        _ => println -> "Something else!";
+    }
+
+    for -> 0..3, i
+    {
+        println -> "Number: ";
+    }
+
+    while -> a / 2.0 < 10.0
+    {
+        add -> a, 1 => a;
+    }
+
+    ret -> 0;
+}
+
+fn println(let val): void
+{
+    asm -> "mov rax, 1";
+    asm -> "mov rdi, 0";
+    asm -> "mov rsi, {&val}";
+    asm -> "mov rdx, {sizeof -> val}";
+    asm -> "syscall";
+}
