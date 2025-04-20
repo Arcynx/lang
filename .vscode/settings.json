@@ -45,7 +45,10 @@
     "string_view": "c",
     "ranges": "c",
     "span": "c",
-    "ios": "c"
+    "ios": "c",
+    "typeindex": "c",
+    "typeinfo": "c"
   },
-  "cSpell.words": ["Flouride"]
+  "cSpell.words": ["Flouride", "instructionbuf"],
+  "C_Cpp.errorSquiggles": "disabled"
 }

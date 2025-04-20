@@ -1,8 +1,15 @@
 use std::io
 
-fn main(): int
+/* Flouride Language */
+fn print_hello(): int
 {
-    println -> "Hello, World!";
+    print -> "Hello, World";
+    ret -> ();
+}
+
+fn main(): int
+{ 
+    print_hello -> (); /* Use () for NULL */
 
     ret -> 0;
 }

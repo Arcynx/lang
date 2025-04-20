@@ -72,12 +72,3 @@ fn main(): int
 
     ret -> 0;
 }
-
-fn println(let val): void
-{
-    asm -> "mov rax, 1";
-    asm -> "mov rdi, 0";
-    asm -> "mov rsi, {&val}";
-    asm -> "mov rdx, {sizeof -> val}";
-    asm -> "syscall";
-}

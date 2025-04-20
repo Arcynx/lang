@@ -89,8 +89,8 @@ ASTNode* parse_float (TokenList* tokens, int* index)
 ASTNode* parse_string (TokenList* tokens, int* index)
 {
     ASTStringLiteral* node = malloc(sizeof(ASTStringLiteral));
-    node->base.type = AST_INT_LITERAL;
-    node->value = tokens->tokens[*index].value;
+    node->base.type = AST_STRING_LITERAL;
+    node->value = strdup(tokens->tokens[*index].value);
     return (ASTNode*)node;
 }
 
@@ -110,21 +110,27 @@ ASTNode* parse_function_call(TokenList* tokens, int* index)
     ASTNode** args = NULL;
     int arg_count = 0;
 
-    while (*index < tokens->count && tokens->tokens[*index].type != TOKEN_SEMICOLON) 
+    if (expect_noquit(tokens, index, 1, TOKEN_LEFT_PAREN))
     {
-        ASTNode* arg = parse_expression(tokens, index);
-
-        args = realloc(args, sizeof(ASTNode*) * (arg_count + 1));
-        if (!args) error("Memory allocation failed during function arguments parsing");
-        args[arg_count++] = arg;
-
-        if (tokens->tokens[*index].type == TOKEN_COMMA)
-            (*index)++;
-        else
-            break;
+        (*index)--;
+        expect(tokens, index, 1, TOKEN_RIGHT_PAREN);
+        printf("NULL\n");
     }
+    else
+        while (*index < tokens->count && tokens->tokens[*index].type != TOKEN_SEMICOLON) 
+        {
+            ASTNode* arg = parse_expression(tokens, index);
 
-    printf("1\n");
+            args = realloc(args, sizeof(ASTNode*) * (arg_count + 1));
+            if (!args) error("Memory allocation failed during function arguments parsing");
+            args[arg_count++] = arg;
+
+            if (tokens->tokens[*index].type == TOKEN_COMMA)
+                (*index)++;
+            else
+                break;
+        }
+
 
     expect(tokens, index, 1, TOKEN_SEMICOLON);
 
@@ -386,9 +392,11 @@ ASTNode* parse_if_statement(TokenList* tokens, int* index)
 {
     (*index)++;
     printf("Parsing statement at index %d 6\n", *index);
-    expect(tokens, index, 1, TOKEN_LEFT_PAREN);
+
+    expect(tokens, index, 1, TOKEN_MINUS);
+    expect(tokens, index, 1, TOKEN_GREATER);
+
     ASTNode* condition = parse_expression(tokens, index);
-    expect(tokens, index, 1, TOKEN_RIGHT_PAREN);
     ASTNode* then_branch = parse_block(tokens, index);
     ASTNode* else_branch = NULL;
     
